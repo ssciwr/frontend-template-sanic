@@ -1,4 +1,5 @@
 feedparser==6.0.8
 Jinja2==2.10.1
+markupsafe==2.0.1
 sanic==22.3.1
 sanic-routing==22.3.0
