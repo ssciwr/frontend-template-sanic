@@ -4,14 +4,57 @@
     <meta charset="UTF-8">
     <title> SSC Frontend </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+	<script>
+    <!-- document.write("<p>This is inserted.</p>"); -->
+
+    
+    ws.onclose = function(evt) {
+      console.log("Connection closed.");
+    };
+    function on_submit_timing_task(e){
+	  console.log("on_submit_timing_task.");
+	  var length = document.getElementById("length");
+	  var ws = new WebSocket("ws://127.0.0.1:8001/panel/wss");
+      ws.onopen = function(evt) { 
+        console.log("Connection open ..."); 
+		ws.send(length.value);
+      };
+
+      ws.onmessage = function(event){
+	    console.log(event.data);
+        if(typeof event.data == "string") {
+          console.log("Received data string");
+        } else if(event.data instanceof ArrayBuffer){
+          var buffer = event.data;
+          console.log("Received arraybuffer");
+        } else {
+	      console.log(typeof event.data);
+	    }
+        var cube_message = document.getElementById("cube_message");
+	  	cube_message.textContent = "cube for length "+ length.value +" is "+ event.data;
+		ws.close();
+      }
+	
+	  return 0
+	}	
+    </script>
 </head>
 <body>
 <p>SSC</p>
 
 <form method="post">
-<label>radius:</label> <input type="text", name="radius"></input> </br>
+<p>calculate circle area</p>
+<label>radius:</label> <input type="number", name="radius"></input> </br>
 <input type="submit", value="submit"></input>
 </form>
 <p>{{flash_text}}</p>
+
+<form method="post">
+<p>timing task example calculate cube</p>
+<label>length:</label> <input type="number", name="length", id="length"></input> </br>
+<input type="button", value="submit" onclick="on_submit_timing_task(event)"></input>
+</form>
+<p id="cube_message"></p>
+<p>{{flash_text01}}</p>
 </body>
 </html>

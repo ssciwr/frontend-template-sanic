@@ -1,3 +1,5 @@
+
+
 #!/usr/bin/env python
 import sys
 
@@ -5,7 +7,7 @@ from feedparser import parse
 from jinja2 import Environment, PackageLoader, select_autoescape
 from sanic import Blueprint
 from sanic.response import html, text
-from test.ssctest import circle_area
+from test.ssctest import circle_area, timing_task
 from config import CONFIG
 
 sys.path.append('../')
@@ -28,6 +30,22 @@ async def template(tpl, **kwargs):
     rendered_template = await template.render_async(**kwargs)
     return html(rendered_template)
 
+
+async def template_timing_task(length):
+    return timing_task(length)
+
+
+@panel_bp.websocket("/wss")
+async def feed(request, ws):
+    while True:
+        data = await ws.recv()
+        print("Received: " + data)
+        length = int(data)
+        cube = await template_timing_task(length)
+        print("Sending: " + str(cube))
+        await ws.send(str(cube))
+
+
 @panel_bp.route("/", methods=["POST", "GET"])
 async def index(request):
     flash_text = ""
@@ -41,4 +59,6 @@ async def index(request):
             flash_text = radius_text + " is not a valid radius"
 
     return await template('index.html', flash_text=flash_text)
+
+
 
