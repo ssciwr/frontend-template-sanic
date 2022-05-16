@@ -8,13 +8,10 @@
     <!-- document.write("<p>This is inserted.</p>"); -->
 
     
-    ws.onclose = function(evt) {
-      console.log("Connection closed.");
-    };
     function on_submit_timing_task(e){
 	  console.log("on_submit_timing_task.");
 	  var length = document.getElementById("length");
-	  var ws = new WebSocket("ws://127.0.0.1:8001/panel/wss");
+	  var ws = new WebSocket("ws://127.0.0.1:8000/panel/wss");
       ws.onopen = function(evt) { 
         console.log("Connection open ..."); 
 		ws.send(length.value);
@@ -33,8 +30,15 @@
         var cube_message = document.getElementById("cube_message");
 	  	cube_message.textContent = "cube for length "+ length.value +" is "+ event.data;
 		ws.close();
-      }
+      };
+	  
+      ws.onclose = function(evt) {
+        console.log("Connection closed.");
+      };
 	
+	  var cube_message = document.getElementById("cube_message");
+	  cube_message.textContent = "calculate pending....";
+	  
 	  return 0
 	}	
     </script>
